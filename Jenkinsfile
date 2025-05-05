@@ -1,35 +1,27 @@
 pipeline {
-    agent { 
-        node {
-            label 'docker-agent-alpine'
-            }
-      }
-    triggers {
-        pollSCM '*/5 * * * *'
+    agent {
+        docker {
+            image 'python:3-slim'
+            args '--network=host -v /tmp:/tmp'
+        }
     }
     stages {
-        stage('Build') {
+        stage('Info') {
             steps {
-                echo "Building.."
-                sh '''
-                echo "Building from Jenkins file"
-                '''
+                echo 'Name: Anya Kalluri'
+                echo 'Roll Number: se22ucse033'
             }
         }
-        stage('Test') {
+        stage('Setup') {
             steps {
-                echo "Testing.."
-                sh '''
-                echo "Testing the build triggered from Jenkins file."
-                '''
+                checkout scm
+                sh 'pip install -r requirements.txt'
+                sh 'git branch -a'  // Example additional command
             }
         }
-        stage('Deliver') {
+        stage('Run') {
             steps {
-                echo 'Deliver....'
-                sh '''
-                echo "doing delivery stuff.."
-                '''
+                sh 'python3 helloworld.py'
             }
         }
     }
